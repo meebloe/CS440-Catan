@@ -12,12 +12,12 @@ public static class BoardGenerator
         // Manually assign hexes for testing
         board.Hexes = new List<Hex>
         {
-            new Hex(0, "Wood", 8),
+            new Hex(0, "Wood", 1),
             new Hex(1, "Sheep", 4),
             new Hex(2, "Brick", 11),
             new Hex(3, "Wheat", 3),
-            new Hex(4, "Stone", 9),
-            new Hex(5, "Wood", 6),
+            new Hex(4, "Stone", 7),
+            new Hex(5, "Wood", 12),
             new Hex(6, "Sheep", 5),
             new Hex(7, "Wheat", 10),
             new Hex(8, "Stone", 8),
