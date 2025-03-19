@@ -2,6 +2,37 @@
   "version": 3,
   "targets": {
     "net8.0": {
+      "LibTessDotNet/1.1.13": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/LibTessDotNet.Double.dll": {
+            "related": ".deps.json"
+          },
+          "lib/netstandard2.0/LibTessDotNet.dll": {
+            "related": ".deps.json;.Double.deps.json"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/LibTessDotNet.Double.dll": {
+            "related": ".deps.json"
+          },
+          "lib/netstandard2.0/LibTessDotNet.dll": {
+            "related": ".deps.json;.Double.deps.json"
+          }
+        }
+      },
+      "LilyPath/0.0.4": {
+        "type": "package",
+        "dependencies": {
+          "MonoGame.Framework.DesktopGL": "3.8.1.303"
+        },
+        "compile": {
+          "lib/net7.0/LilyPath.dll": {}
+        },
+        "runtime": {
+          "lib/net7.0/LilyPath.dll": {}
+        }
+      },
       "MonoGame.Content.Builder.Task/3.8.2.1105": {
         "type": "package",
         "build": {
@@ -81,6 +112,18 @@
           }
         }
       },
+      "Shapes2D.Standard/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "LibTessDotNet": "1.1.13"
+        },
+        "compile": {
+          "lib/netstandard2.0/Shapes2D.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Shapes2D.dll": {}
+        }
+      },
       "System.Memory/4.5.3": {
         "type": "package",
         "compile": {
@@ -102,6 +145,34 @@
     }
   },
   "libraries": {
+    "LibTessDotNet/1.1.13": {
+      "sha512": "rImNxrISAL5AIh1AP6iWhjqQOgpPkzoY4TkbpOotL99f72/eONTSu2v4e8VuVO1nANJThg/inPkucQgISTqTrw==",
+      "type": "package",
+      "path": "libtessdotnet/1.1.13",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/LibTessDotNet.Double.deps.json",
+        "lib/netstandard2.0/LibTessDotNet.Double.dll",
+        "lib/netstandard2.0/LibTessDotNet.deps.json",
+        "lib/netstandard2.0/LibTessDotNet.dll",
+        "libtessdotnet.1.1.13.nupkg.sha512",
+        "libtessdotnet.nuspec"
+      ]
+    },
+    "LilyPath/0.0.4": {
+      "sha512": "4Udr86R+T8xt4LHOupYZ98GgsmUvqlF3QgXteRP/NQ35yn8PVdvhWFESrj1W2ADhUKQ3gkzd9QAgaUgd4l77bg==",
+      "type": "package",
+      "path": "lilypath/0.0.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/net7.0/LilyPath.dll",
+        "lilypath.0.0.4.nupkg.sha512",
+        "lilypath.nuspec"
+      ]
+    },
     "MonoGame.Content.Builder.Task/3.8.2.1105": {
       "sha512": "wNlkLaITOqMs9MmCYLp3Qc7QfFng3FhIq/b+njdYV3cTVpLYgs/i56FYtJjm8jLoUA/2sJ36Qo/uqWpgW+jBuQ==",
       "type": "package",
@@ -163,6 +234,19 @@
         "lib/netstandard2.0/NVorbis.xml",
         "nvorbis.0.10.4.nupkg.sha512",
         "nvorbis.nuspec"
+      ]
+    },
+    "Shapes2D.Standard/1.0.0": {
+      "sha512": "zbm2NWy7uL31KHPhQw8c1Kejher1faaC8DDQcKWgPDcMHTZjIAeJ9VSBgBRgb93nN+6dzPkHNNZpvq9UomGANw==",
+      "type": "package",
+      "path": "shapes2d.standard/1.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "lib/netstandard2.0/Shapes2D.dll",
+        "shapes2d.standard.1.0.0.nupkg.sha512",
+        "shapes2d.standard.nuspec"
       ]
     },
     "System.Memory/4.5.3": {
@@ -233,8 +317,10 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "LilyPath >= 0.0.4",
       "MonoGame.Content.Builder.Task >= 3.8.2.1105",
-      "MonoGame.Framework.DesktopGL >= 3.8.2.1105"
+      "MonoGame.Framework.DesktopGL >= 3.8.2.1105",
+      "Shapes2D.Standard >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -280,6 +366,10 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
+          "LilyPath": {
+            "target": "Package",
+            "version": "[0.0.4, )"
+          },
           "MonoGame.Content.Builder.Task": {
             "target": "Package",
             "version": "[3.8.2.1105, )"
@@ -287,6 +377,10 @@
           "MonoGame.Framework.DesktopGL": {
             "target": "Package",
             "version": "[3.8.2.1105, )"
+          },
+          "Shapes2D.Standard": {
+            "target": "Package",
+            "version": "[1.0.0, )"
           }
         },
         "imports": [

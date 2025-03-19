@@ -8,11 +8,36 @@
     ".NETCoreApp,Version=v8.0": {
       "CatanGame/1.0.0": {
         "dependencies": {
+          "LilyPath": "0.0.4",
           "MonoGame.Content.Builder.Task": "3.8.2.1105",
-          "MonoGame.Framework.DesktopGL": "3.8.2.1105"
+          "MonoGame.Framework.DesktopGL": "3.8.2.1105",
+          "Shapes2D.Standard": "1.0.0"
         },
         "runtime": {
           "CatanGame.dll": {}
+        }
+      },
+      "LibTessDotNet/1.1.13": {
+        "runtime": {
+          "lib/netstandard2.0/LibTessDotNet.Double.dll": {
+            "assemblyVersion": "1.1.13.0",
+            "fileVersion": "1.1.13.0"
+          },
+          "lib/netstandard2.0/LibTessDotNet.dll": {
+            "assemblyVersion": "1.1.13.0",
+            "fileVersion": "1.1.13.0"
+          }
+        }
+      },
+      "LilyPath/0.0.4": {
+        "dependencies": {
+          "MonoGame.Framework.DesktopGL": "3.8.2.1105"
+        },
+        "runtime": {
+          "lib/net7.0/LilyPath.dll": {
+            "assemblyVersion": "0.0.4.0",
+            "fileVersion": "0.0.4.0"
+          }
         }
       },
       "MonoGame.Content.Builder.Task/3.8.2.1105": {},
@@ -81,6 +106,17 @@
           }
         }
       },
+      "Shapes2D.Standard/1.0.0": {
+        "dependencies": {
+          "LibTessDotNet": "1.1.13"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Shapes2D.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "System.Memory/4.5.3": {},
       "System.ValueTuple/4.5.0": {}
     }
@@ -90,6 +126,20 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "LibTessDotNet/1.1.13": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-rImNxrISAL5AIh1AP6iWhjqQOgpPkzoY4TkbpOotL99f72/eONTSu2v4e8VuVO1nANJThg/inPkucQgISTqTrw==",
+      "path": "libtessdotnet/1.1.13",
+      "hashPath": "libtessdotnet.1.1.13.nupkg.sha512"
+    },
+    "LilyPath/0.0.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-4Udr86R+T8xt4LHOupYZ98GgsmUvqlF3QgXteRP/NQ35yn8PVdvhWFESrj1W2ADhUKQ3gkzd9QAgaUgd4l77bg==",
+      "path": "lilypath/0.0.4",
+      "hashPath": "lilypath.0.0.4.nupkg.sha512"
     },
     "MonoGame.Content.Builder.Task/3.8.2.1105": {
       "type": "package",
@@ -118,6 +168,13 @@
       "sha512": "sha512-WYnil3DhQHzjCY0dM9I2B3r1vWip90AOuQd25KE4NrjPQBg0tBJFluRLm5YPnO5ZLDmwrfosY8jCQGQRmWI/Pg==",
       "path": "nvorbis/0.10.4",
       "hashPath": "nvorbis.0.10.4.nupkg.sha512"
+    },
+    "Shapes2D.Standard/1.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-zbm2NWy7uL31KHPhQw8c1Kejher1faaC8DDQcKWgPDcMHTZjIAeJ9VSBgBRgb93nN+6dzPkHNNZpvq9UomGANw==",
+      "path": "shapes2d.standard/1.0.0",
+      "hashPath": "shapes2d.standard.1.0.0.nupkg.sha512"
     },
     "System.Memory/4.5.3": {
       "type": "package",

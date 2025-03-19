@@ -24,3 +24,7 @@ C:\Projects\CS440-Catan\CatanGame\obj\Debug\net8.0\refint\CatanGame.dll
 C:\Projects\CS440-Catan\CatanGame\obj\Debug\net8.0\CatanGame.pdb
 C:\Projects\CS440-Catan\CatanGame\obj\Debug\net8.0\CatanGame.genruntimeconfig.cache
 C:\Projects\CS440-Catan\CatanGame\obj\Debug\net8.0\ref\CatanGame.dll
+C:\Projects\CS440-Catan\CatanGame\bin\Debug\net8.0\LibTessDotNet.Double.dll
+C:\Projects\CS440-Catan\CatanGame\bin\Debug\net8.0\LibTessDotNet.dll
+C:\Projects\CS440-Catan\CatanGame\bin\Debug\net8.0\LilyPath.dll
+C:\Projects\CS440-Catan\CatanGame\bin\Debug\net8.0\Shapes2D.dll
