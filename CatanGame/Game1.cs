@@ -313,6 +313,7 @@ namespace CatanGame
                 _spriteBatch.DrawString(_dynamicFont, numberText, textPosition, textColor);
             }
 
+            /*
             // Draw numbers at their predefined positions
             foreach (var entry in _hardcodedPositions)
             {
@@ -324,6 +325,7 @@ namespace CatanGame
 
                 _spriteBatch.DrawString(_dynamicFont, id.ToString(), textPosition, Color.Black);
             }
+            */
 
             foreach (var harbor in _catanGame.GetHarbors())
             {
