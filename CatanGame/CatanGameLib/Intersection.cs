@@ -9,6 +9,7 @@ public class Intersection
     public List<Hex> AdjacentHexes { get; set; }
     public List<Edge> ConnectedEdges { get; set; }
     public Player? Owner { get; set; }
+    public Harbor? Harbor { get; set; }
 
     public Intersection(int id)
     {
@@ -16,5 +17,6 @@ public class Intersection
         AdjacentHexes = new List<Hex>();
         ConnectedEdges = new List<Edge>();
         Owner = null;
+        Harbor = null;
     }
 }

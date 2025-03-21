@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CatanGame")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ab38921ef98cf02570c1ef96a45d140cf7ccb62a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0e9a657735e9b42f11bf322d9871a8f0d44f5072")]
 [assembly: System.Reflection.AssemblyProductAttribute("CatanGame")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CatanGame")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
