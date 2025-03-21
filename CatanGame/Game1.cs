@@ -17,10 +17,11 @@ namespace CatanGame
         private SpriteBatch _spriteBatch;
         private BasicEffect _basicEffect;
         private DrawBatch _drawBatch;
-        private Board _board;
         private Dictionary<string, Color> _resourceColors;
         private SpriteFont _dynamicFont;
         private List<Tuple<Vector2, string, Color>> _hexNumbers;
+        private GameController _catanGame = new GameController();
+        private Dictionary<string, Texture2D> _harborIcons;
 
         private Dictionary<int, Vector2> _hardcodedPositions = new Dictionary<int, Vector2>
         {
@@ -114,9 +115,6 @@ namespace CatanGame
             _graphics.PreferredBackBufferHeight = 600;
             _graphics.ApplyChanges();
 
-            // Generate the game board with hex tiles
-            _board = BoardGenerator.GenerateBoard();
-
             // Define colors for different resource types
             _resourceColors = new Dictionary<string, Color>
             {
@@ -135,13 +133,11 @@ namespace CatanGame
 
         protected override void LoadContent()
         {
-            // Initialize drawing components
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _basicEffect = new BasicEffect(GraphicsDevice)
             {
                 VertexColorEnabled = true,
-                Projection = Matrix.CreateOrthographicOffCenter
-                (
+                Projection = Matrix.CreateOrthographicOffCenter(
                     0, GraphicsDevice.Viewport.Width,
                     GraphicsDevice.Viewport.Height, 0,
                     0, 1
@@ -161,6 +157,26 @@ namespace CatanGame
             byte[] fontBytes = File.ReadAllBytes(fontPath);
             _dynamicFont = TtfFontBaker.Bake(fontBytes, 30, 1024, 1024, new[] { CharacterRange.BasicLatin })
                 .CreateSpriteFont(GraphicsDevice);
+
+            // Load harbor icons
+            _harborIcons = new Dictionary<string, Texture2D>();
+            string[] harborTypes = { "brick", "wood", "wheat", "sheep", "stone", "special" };
+
+            foreach (var type in harborTypes)
+            {
+                string path = $"Content/img/{type}.png";
+                if (File.Exists(path))
+                {
+                    using (FileStream fileStream = new FileStream(path, FileMode.Open))
+                    {
+                        _harborIcons[type] = Texture2D.FromStream(GraphicsDevice, fileStream);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Warning: Harbor icon not found for '{type}'.");
+                }
+            }
         }
 
         protected override void Update(GameTime gameTime)
@@ -204,10 +220,11 @@ namespace CatanGame
 
                 for (int col = 0; col < hexCount; col++)
                 {
-                    if (hexIndex >= _board.Hexes.Count)
+                    List<Hex> _tempBoard = _catanGame.GetHexes();
+                    if (hexIndex >= _tempBoard.Count)
                         break;
 
-                    Hex hex = _board.Hexes[hexIndex];
+                    Hex hex = _tempBoard[hexIndex];
                     float x = startX + offsetX + col * hexWidth;
                     float y = startY + row * verticalSpacing;
 
@@ -244,13 +261,13 @@ namespace CatanGame
 
 
             // Draw Harbors and Connections Simultaneously
-            foreach (var harbor in _board.Harbors)
+            foreach (var harbor in _catanGame.GetHarbors())
             {
                 // Get the harbor's position
                 Vector2 harborPosition = GetHarborPosition(harbor.Position, centerHexPosition, hexWidth, hexHeight);
                 Rectangle harborRect = GetHarborRectangle(harborPosition);
 
-                // Draw connection lines
+                // Draw connection lines first (so they are underneath everything)
                 if (_harborConnections.TryGetValue(harbor.Position, out var intersections))
                 {
                     foreach (var intersectionIndex in intersections)
@@ -262,12 +279,9 @@ namespace CatanGame
                     }
                 }
 
-                // Draw the harbor rectangle
+                // Draw harbor background
                 _drawBatch.FillRectangle(new SolidColorBrush(Color.White), harborRect);
                 _drawBatch.DrawRectangle(new Pen(Color.Black, 2f), harborRect);
-
-                // Store harbor number for later drawing
-                _hexNumbers.Add(new Tuple<Vector2, string, Color>(harborPosition, harbor.Position.ToString(), Color.Black));
             }
 
             _drawBatch.End();
@@ -308,7 +322,23 @@ namespace CatanGame
                 Vector2 textSize = _dynamicFont.MeasureString(id.ToString());
                 Vector2 textPosition = new Vector2(position.X - textSize.X / 2, position.Y - textSize.Y / 2);
 
-                _spriteBatch.DrawString(_dynamicFont, id.ToString(), textPosition, Color.White);
+                _spriteBatch.DrawString(_dynamicFont, id.ToString(), textPosition, Color.Black);
+            }
+
+            foreach (var harbor in _catanGame.GetHarbors())
+            {
+                Vector2 harborPosition = GetHarborPosition(harbor.Position, centerHexPosition, hexWidth, hexHeight);
+
+                // Fix: Use `ResourceType` instead of `Type`
+                string harborType = harbor.ResourceType.ToLower();
+
+                if (_harborIcons.TryGetValue(harborType, out Texture2D icon))
+                {
+                    _spriteBatch.Draw(icon, new Rectangle(
+                        (int)harborPosition.X - 15, 
+                        (int)harborPosition.Y - 15, 
+                        30, 30), Color.White);
+                }
             }
 
             _spriteBatch.End();

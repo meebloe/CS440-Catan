@@ -2,12 +2,12 @@ using System.Collections.Generic;
 
 namespace CatanGameLib;
 
-public class CatanGame
+public class GameController
 {
     public Board Board { get; private set; }
     public List<Player> Players { get; private set; }
 
-    public CatanGame()
+    public GameController()
     {
         Players = new List<Player>
         {
@@ -16,10 +16,17 @@ public class CatanGame
             new Player("White"),
             new Player("Orange")
         };
+
+        Board = BoardGenerator.GenerateBoard();
     }
 
-    public void Start()
+    public List<Hex> GetHexes()
     {
-        Board = BoardGenerator.GenerateBoard();
+        return Board?.Hexes ?? new List<Hex>();
+    }
+
+    public List<Harbor> GetHarbors()
+    {
+        return Board?.Harbors ?? new List<Harbor>();
     }
 }
