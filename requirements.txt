@@ -1,0 +1,5 @@
+# requirements.txt
+Flask>=2.0
+requests>=2.20
+numpy>=1.20
+torch>=1.10

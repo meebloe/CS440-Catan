@@ -1,7 +1,0 @@
-When the desert is the bottom right tile there is
-no number on the bottom middle.
-
-Center desert led to an empty number spot in the bottom right.
-
-This seems to be caused by red numbers being next to multiple
-other red numbers.
