@@ -14,20 +14,20 @@ This project implements an AI agent using a simple Multi-Layer Perceptron (MLP) 
 ```text
 .
 ├── README.md
-├── client/ # Unity Game Client and related files
-│ ├── CatanLearner.exe # The executable game client
+├── client/                 # Unity Game Client and related files
+│ ├── CatanLearner.exe      # The executable game client
 │ └── ... (Other Unity files/folders)
-├── server/ # Python AI Server, Model, and Training code
-│ ├── catan_ai.py # Flask server handling API requests
-│ ├── model.py # PyTorch MLP model definition
+├── server/                 # Python AI Server, Model, and Training code
+│ ├── catan_ai.py           # Flask server handling API requests
+│ ├── model.py              # PyTorch MLP model definition
 │ ├── game_state_encoder.py # Converts game state JSON to a numerical vector
-│ ├── action_mapping.py # Maps action descriptions to numerical indices
-│ ├── train_from_logs.py # Script to train the model from game logs
-│ ├── model_weights.pth # Saved weights for the trained model
-│ ├── iterations/ # Checkpoints saved during bulk training
+│ ├── action_mapping.py     # Maps action descriptions to numerical indices
+│ ├── train_from_logs.py    # Script to train the model from game logs
+│ ├── model_weights.pth     # Saved weights for the trained model
+│ ├── iterations/           # Checkpoints saved during bulk training
 │ └── ... (init.py)
-├── launch_bot_match.py # Main script to launch game/server and manage modes
-├── requirements.txt # Python dependencies
+├── launch_bot_match.py     # Main script to launch game/server and manage modes
+├── requirements.txt        # Python dependencies
 └── ... (Other potential test/output files)
 ```
 
