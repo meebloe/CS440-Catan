@@ -28,7 +28,7 @@ def clear_game_logs():
 
 def launch_ai_server(mode):
     print("Starting AI Server...")
-    print(f"Launching AI Server in {mode.upper()} mode...")  # <-- This new printout
+    print(f"Launching AI Server in {mode.upper()} mode...")
     env_name = os.environ.get("CONDA_DEFAULT_ENV")
     if env_name != "catan_ai_env":
         print(f"ERROR: Please activate 'catan_ai_env' before running this script (current: {env_name})")
