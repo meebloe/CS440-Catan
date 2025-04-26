@@ -1,3 +1,59 @@
-/server/__pycache__/
-/server/*.pyc
-/server/*.pth
+# ==========
+# PYTHON
+# ==========
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.so
+*.egg-info/
+.env
+.venv/
+env/
+venv/
+*.log
+*.sqlite3
+
+# =========
+# UNITY
+# =========
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+UserSettings/
+Assets/AssetStoreTools*
+
+# Exclude built stuff
+client/CatanLearner_BurstDebugInformation_DoNotShip/
+client/CatanLearner_Data/
+client/D3D12/
+client/MonoBleedingEdge/
+client/UnityCrashHandler64.exe
+client/UnityPlayer.dll
+
+# Game logs
+client/SelfPlayLogs/
+client/OldLogs/
+
+# ====================
+# VISUAL STUDIO
+# ====================
+.vscode/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+
+# ====================
+# OS
+# ====================
+.DS_Store
+Thumbs.db
