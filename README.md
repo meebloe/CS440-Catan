@@ -11,6 +11,7 @@ This project implements an AI agent using a simple Multi-Layer Perceptron (MLP) 
 
 ## Project Structure
 
+```text
 .
 ├── README.md
 ├── client/ # Unity Game Client and related files
@@ -28,12 +29,12 @@ This project implements an AI agent using a simple Multi-Layer Perceptron (MLP) 
 ├── launch_bot_match.py # Main script to launch game/server and manage modes
 ├── requirements.txt # Python dependencies
 └── ... (Other potential test/output files)
-
+```
 
 ## Prerequisites
 
-*   **Conda:** For Python environment management. Download and install Anaconda or Miniconda.
-*   **Python:** Version 3.9+ recommended.
+*   **Conda (recomended):** For Python environment management. Download and install Anaconda or Miniconda. 
+*   **Python:** Version 3.9+.
 *   **Unity Game Build:** The `client/CatanLearner.exe` built from the Unity project (provided here).
 
 ## Setup
@@ -119,7 +120,6 @@ Use the `launch_bot_match.py` script from the project root directory while your 
 
 Communication between the game client (Unity) and the AI server (Python Flask) uses JSON objects sent over HTTP POST requests to the `/get_action` endpoint.
 
-*(The JSON structure description from your original README is detailed and accurate. You can keep it here as it was, or potentially move it to a separate `API_DOCUMENTATION.md` if the README becomes too long.)*
 
 ### 1. State JSON (Sent from Game Client to AI Server)
 
@@ -129,46 +129,43 @@ This JSON object represents the complete snapshot of the game state needed for t
 
 ```javascript
 {
-  "gameStateId": "string (optional)", // Unique identifier for the state (for logging/debugging)
-  "currentPlayerIndex": integer,      // Index (0 or 1) of the player whose turn it is
-  // "diceRolled": boolean,           // Note: Check if these are still used/needed by the encoder/model
-  "diceResult": integer, // Changed based on encoder: single int (2-12, 0 if none)
-  // "mustMoveRobber": boolean,         // Note: Check if these are still used/needed by the encoder/model
-  // "robberHexIndex": integer,         // Note: Check if these are still used/needed by the encoder/model
-  "hexes": [                          // List of 19 hex objects (MUST be in consistent order)
+  "gameStateId": "string (optional)",   // Unique identifier (ignored by encoder, useful for logging)
+  "currentPlayerIndex": integer,        // Index (0 or 1) of the player whose turn it is
+  "diceResult": integer,                // Result of the last dice roll (2-12). 0 or other value if not applicable/rolled yet.
+  "hexes": [                            // List of 19 hex objects (MUST be in consistent order, matching NUM_HEXES)
     {
-      "id": integer,                  // Hex index (0-18)
-      "resource": "string" | null,    // Resource type ("LUMBER", "BRICK", "WOOL", "GRAIN", "ORE", "DESERT") or null
-      "numberToken": integer | null   // Dice number (2-12, excluding 7) or null (for desert)
+      "id": integer,                    // Hex index (0-18)
+      "resource": "string" | null,      // Resource type ("LUMBER", "BRICK", "WOOL", "GRAIN", "ORE", "DESERT") or null
+      "numberToken": integer | null     // Dice number (2-12, excluding 7) or null (for desert)
     },
     // ... 18 more hex objects
   ],
-  "roads": [                          // List of 72 potential road edge objects (MUST be in consistent order)
+  "roads": [                            // List of 72 potential road edge objects (MUST be in consistent order, matching NUM_ROADS)
     {
-      "id": integer,                  // Edge index (0-71)
-      "ownerPlayerIndex": integer     // Owning player index (0 or 1), or -1 if unoccupied
+      "id": integer,                    // Edge index (0-71)
+      "ownerPlayerIndex": integer       // Owning player index (0 or 1), or -1 if unoccupied
     },
     // ... 71 more road objects
   ],
-  "buildings": [                      // List of 54 potential building intersection objects (MUST be in consistent order)
+  "buildings": [                        // List of 54 potential building intersection objects (MUST be in consistent order, matching NUM_INTERSECTIONS)
     {
-      "id": integer,                  // Intersection index (0-53)
-      "ownerPlayerIndex": integer,    // Owning player index (0 or 1), or -1 if unoccupied
-      "type": "string"                // Type of building ("NONE", "SETTLEMENT", "CITY")
+      "id": integer,                    // Intersection index (0-53)
+      "ownerPlayerIndex": integer,      // Owning player index (0 or 1), or -1 if unoccupied
+      "type": "string"                  // Type of building ("NONE", "SETTLEMENT", "CITY")
     },
     // ... 53 more building objects
   ],
-  "players": [                        // List of 2 player objects
+  "players": [                          // List of 2 player objects (MUST match NUM_PLAYERS)
     {
-      "index": integer,               // Player index (0 or 1)
-      "resources": {                  // Dictionary of resource counts
+      "index": integer,                 // Player index (0 or 1)
+      "resources": {                    // Dictionary of resource counts (Keys MUST match RESOURCE_ORDER)
         "LUMBER": integer,
         "BRICK": integer,
         "WOOL": integer,
         "GRAIN": integer,
         "ORE": integer
       },
-      "victoryPoints": integer        // Current public victory point count
+      "victoryPoints": integer          // Current public victory point count
     },
     { // Player 1 object structure is identical
       "index": 1,
@@ -176,15 +173,27 @@ This JSON object represents the complete snapshot of the game state needed for t
       "victoryPoints": integer
     }
   ],
-  "availableActions": [               // *** CRITICAL LIST *** of all LEGAL actions the current player can take NOW
+  "availableActions": [                 // List of all move available to the bot given the current board state
     // Each object in this list represents one possible, valid action.
-    // Format depends on action type (must match action_mapping.py):
+    // The 'actionType' and keys MUST exactly match those handled in 'server/action_mapping.py'.
     {"actionType": "BUILD_ROAD", "edgeIndex": integer},
     {"actionType": "BUILD_SETTLEMENT", "intersectionIndex": integer},
     {"actionType": "BUILD_CITY", "intersectionIndex": integer}, // Index of the settlement to upgrade
-    {"actionType": "BANK_TRADE_4_1", "resourceOut": "string", "resourceIn": "string"}, // Resource names
-    // {"actionType": "MOVE_ROBBER", ...}, // Note: Add robber action if implemented & mapped
+    {"actionType": "BANK_TRADE_4_1", "resourceOut": "string", "resourceIn": "string"}, // Resource names from RESOURCE_ORDER
     {"actionType": "END_TURN"}
-    // ... potentially other actions if features are added and mapped in action_mapping.py
+    // Note: Actions like MOVE_ROBBER are NOT currently mapped in action_mapping.py
+    // and therefore cannot be processed or chosen by the AI.
   ]
 }
+```
+
+### 2. Action JSON (Sent from AI Server to Game Client)
+The server selects one of the actions provided in the availableActions list from the State JSON and returns it in the exact same format.
+**Example Response:**
+```javascript
+{"actionType": "BUILD_ROAD", "edgeIndex": 15}
+```
+or
+```javascript
+{"actionType": "END_TURN"}
+```
