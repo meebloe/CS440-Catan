@@ -11,7 +11,7 @@ AI_SERVER_SCRIPT = os.path.join("server", "catan_ai.py")
 TRAINING_SCRIPT = os.path.join("server", "train_from_logs.py")
 
 # Timeout for each Unity game in seconds (only for training)
-GAME_TIMEOUT = 600
+GAME_TIMEOUT = 360
 
 def clear_game_logs():
     log_dir = os.path.abspath(os.path.join("client", "SelfPlayLogs"))
@@ -26,13 +26,18 @@ def clear_game_logs():
 
     print("Cleared all game logs.")
 
-def launch_ai_server():
+def launch_ai_server(mode):
     print("Starting AI Server...")
+    print(f"Launching AI Server in {mode.upper()} mode...")  # <-- This new printout
     env_name = os.environ.get("CONDA_DEFAULT_ENV")
     if env_name != "catan_ai_env":
         print(f"ERROR: Please activate 'catan_ai_env' before running this script (current: {env_name})")
         sys.exit(1)
-    return subprocess.Popen(["python", AI_SERVER_SCRIPT])
+
+    env = os.environ.copy()
+    env["CATAN_TRAIN_MODE"] = "1" if mode == "train" else "0"
+
+    return subprocess.Popen(["python", AI_SERVER_SCRIPT], env=env)
 
 def launch_game(mode):
     if mode == "train":
@@ -81,7 +86,7 @@ if __name__ == "__main__":
 
     clear_game_logs()
 
-    server_proc = launch_ai_server()
+    server_proc = launch_ai_server(mode)
     time.sleep(3)
 
     try:

@@ -24,6 +24,11 @@ app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
 app.logger.info("Flask app initialized.")
 
+# --- Determine Mode (Train or Play) ---
+# Default to play mode unless explicitly set via environment variable
+TRAIN_MODE = os.environ.get("CATAN_TRAIN_MODE", "0") == "1"
+app.logger.info(f"Server running in {'TRAIN' if TRAIN_MODE else 'PLAY'} mode.")
+
 # --- Load/Initialize the Model ---
 # Instantiate the model with random weights
 # Note: For actual training, you'd load saved weights here.
@@ -37,56 +42,7 @@ else:
     app.logger.info("No existing model weights found. Starting fresh.")
 model.eval() # Set the model to evaluation mode (important!)
 app.logger.info(f"Initialized/Loaded CatanSimpleMLP model. Ready for inference.")
-# ---------------------------------
-
-def select_action_from_model(model_output: torch.Tensor, available_actions: list) -> Optional[dict]:
-    """
-    Selects the best *available* action based on model scores.
-
-    Args:
-        model_output: The raw output tensor from the model (scores for all possible actions). Shape [1, TOTAL_ACTIONS].
-        available_actions: The list of action dictionaries received from Unity.
-
-    Returns:
-        The chosen action dictionary, or None if no valid action can be selected.
-    """
-    if not available_actions:
-        app.logger.warning("select_action_from_model called with no available actions.")
-        return None
-
-    # Get scores for all actions (remove batch dimension)
-    action_scores = model_output.squeeze(0) # Shape [TOTAL_ACTIONS]
-
-    best_score = -float('inf')
-    chosen_action = None
-    valid_indices_scores = [] # For debugging/logging
-
-    for action_dict in available_actions:
-        action_idx = get_action_index(action_dict)
-
-        if action_idx is not None and 0 <= action_idx < TOTAL_ACTIONS:
-            score = action_scores[action_idx].item() # Get score for this specific action index
-            valid_indices_scores.append((action_idx, score, action_dict['actionType'])) # Log index, score, type
-
-            if score > best_score:
-                best_score = score
-                chosen_action = action_dict
-        else:
-            app.logger.warning(f"Could not map or invalid index for available action: {action_dict}")
-
-    # Log the scores of considered available actions
-    app.logger.debug(f"Scores for available actions (Index, Score, Type): {valid_indices_scores}")
-
-    if chosen_action:
-        app.logger.info(f"Action selected by model: {chosen_action} (Score: {best_score:.4f})")
-    else:
-        # Fallback if no valid action could be processed (should be rare)
-        app.logger.error("Failed to select any action from model output based on available actions. Falling back.")
-        # Maybe pick random from available as fallback? Or return error?
-        chosen_action = random.choice(available_actions) if available_actions else None
-
-    return chosen_action
-
+# ----------------------------------
 
 @app.route('/get_action', methods=['POST'])
 def get_action():
@@ -135,11 +91,11 @@ def get_action():
         # ------------------------------------
 
 
-        # --- Step 3: Select Action (Using availableActions Mask & Model Scores) ---
+        # --- Step 3: Select Action (Using Model.predict_action which handles epsilon-greedy) ---
         available_actions = state_data.get('availableActions')
         app.logger.debug(f"Available actions received: {available_actions}")
 
-        chosen_action = select_action_from_model(model_output, available_actions)
+        chosen_action = model.predict_action(state_tensor, available_actions, use_exploration=TRAIN_MODE)
         # --------------------------------------------------------------------
 
 

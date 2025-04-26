@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import logging
 import random
+from action_mapping import get_action_index
 
 # --- Import constants from other modules ---
 try:
@@ -65,7 +66,7 @@ class CatanSimpleMLP(nn.Module):
             # --- Exploration (epsilon-greedy) ---
             if use_exploration and random.random() < self.epsilon:
                 random_action = random.choice(available_actions)
-                logging.info("Exploration: Random action selected during inference.")
+                print("Exploration: Random action selected during inference.")
                 return random_action
 
             # --- Otherwise pick best-scoring action ---
