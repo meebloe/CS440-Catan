@@ -32,7 +32,7 @@ class CatanSimpleMLP(nn.Module):
         self.fc3 = nn.Linear(hidden_size2, output_size)  # Output layer size = total possible actions
 
         # Epsilon-greedy exploration
-        self.epsilon = 0.30
+        self.epsilon = 0.15
 
         logging.info(f"Initialized CatanSimpleMLP: Input={input_size}, Hidden=[{hidden_size1}, {hidden_size2}], Output={output_size}")
 

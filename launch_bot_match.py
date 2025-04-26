@@ -9,22 +9,34 @@ UNITY_EXECUTABLE = os.path.abspath(os.path.join("client", "CatanLearner.exe"))
 # Server script
 AI_SERVER_SCRIPT = os.path.join("server", "catan_ai.py")
 TRAINING_SCRIPT = os.path.join("server", "train_from_logs.py")
-
-# Timeout for each Unity game in seconds (only for training)
-GAME_TIMEOUT = 360
+ITERATIONS_FOLDER = os.path.join("server", "iterations")
+MODEL_PATH = os.path.join("server", "model_weights.pth")
+VALID_MODES = {"train", "play", "bulktrain"}
 
 def clear_game_logs():
     log_dir = os.path.abspath(os.path.join("client", "SelfPlayLogs"))
+    old_logs_dir = os.path.abspath(os.path.join("client", "OldLogs"))
+
     if not os.path.exists(log_dir):
         print(f"[DEBUG] Log directory {log_dir} does not exist, creating...")
         os.makedirs(log_dir)
 
+    if not os.path.exists(old_logs_dir):
+        print(f"[DEBUG] Old logs directory {old_logs_dir} does not exist, creating...")
+        os.makedirs(old_logs_dir)
+
+    # Move existing logs to OldLogs
     for filename in os.listdir(log_dir):
         if filename.endswith(".jsonl"):
-            file_path = os.path.join(log_dir, filename)
-            os.remove(file_path)
+            source_path = os.path.join(log_dir, filename)
+            dest_path = os.path.join(old_logs_dir, filename)
+            try:
+                os.rename(source_path, dest_path)
+                print(f"Moved {filename} to OldLogs.")
+            except Exception as e:
+                print(f"Failed to move {filename}: {e}")
 
-    print("Cleared all game logs.")
+    print("Cleared all game logs (moved to OldLogs).")
 
 def launch_ai_server(mode):
     print("Starting AI Server...")
@@ -66,6 +78,45 @@ def shutdown(server_proc):
     except Exception as e:
         print(f"Failed to cleanly shut down server: {e}")
 
+def launch_bulk_train(x_games, y_sets):
+    os.makedirs(ITERATIONS_FOLDER, exist_ok=True)
+
+    for set_num in range(y_sets):
+        print(f"=== Starting Set {set_num + 1} / {y_sets} ===")
+        
+        # Launch X games
+        processes = []
+        for _ in range(x_games):
+            command = f'"{UNITY_EXECUTABLE}" --bot-vs-bot'.strip()
+            proc = subprocess.Popen(command, shell=True)
+            processes.append(proc)
+
+        for proc in processes:
+            proc.wait()
+
+        print("[INFO] All games done. Training...")
+
+        # Train
+        subprocess.run([sys.executable, TRAINING_SCRIPT])
+
+        # Save model
+        save_model_checkpoint()
+
+        # Clear logs after training
+        clear_game_logs()
+
+    print("\n[INFO] Bulk training completed.")
+
+def save_model_checkpoint():
+    existing = os.listdir(ITERATIONS_FOLDER)
+    n_models = sum(1 for f in existing if f.startswith("settlerbot_") and f.endswith(".pth"))
+
+    save_name = f"settlerbot_{n_models}.pth"
+    save_path = os.path.join(ITERATIONS_FOLDER, save_name)
+
+    shutil.copy(MODEL_PATH, save_path)
+
+
 if __name__ == "__main__":
     mode = "play"
     num_games = 1
@@ -80,7 +131,7 @@ if __name__ == "__main__":
             print("Invalid number of games. Must be an integer.")
             sys.exit(1)
 
-    if mode not in {"train", "play"}:
+    if mode not in {"train", "play", "bulktrain"}:
         print("Invalid mode. Use 'train' or 'play'.")
         sys.exit(1)
 
@@ -90,17 +141,22 @@ if __name__ == "__main__":
     time.sleep(3)
 
     try:
-        if mode == "train":
+        if mode == "bulktrain":
+            x_games = int(sys.argv[2])
+            y_sets = int(sys.argv[3])
+            launch_bulk_train(x_games, y_sets)
+
+        elif mode == "train":
+            game_procs = []
             for game_num in range(1, num_games + 1):
                 print(f"Starting training game {game_num} of {num_games}...")
-                game_proc = launch_game(mode)
-                try:
-                    game_proc.wait(timeout=GAME_TIMEOUT)
-                    print(f"Training game {game_num} finished successfully.\n")
-                except subprocess.TimeoutExpired:
-                    print(f"Training game {game_num} timed out after {GAME_TIMEOUT // 60} minutes. Force closing and moving to next...\n")
-                    game_proc.kill()
-                    game_proc.wait()
+                proc = launch_game(mode)
+                game_procs.append(proc)
+            
+            print("Waiting for all games to finish...")
+            for proc in game_procs:
+                proc.wait()
+
             train_model("train")
         else:
             print("Starting play mode...")
