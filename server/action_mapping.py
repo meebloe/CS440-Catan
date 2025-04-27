@@ -6,7 +6,8 @@ from typing import Optional
 # --- Constants from game rules ---
 NUM_ROADS = 72
 NUM_INTERSECTIONS = 54
-RESOURCE_ORDER = ["LUMBER", "BRICK", "WOOL", "GRAIN", "ORE"] # Must match encoder
+# RESOURCE_ORDER = ["LUMBER", "BRICK", "WOOL", "GRAIN", "ORE"] # Old
+RESOURCE_ORDER = ["WOOD", "BRICK", "SHEEP", "WHEAT", "STONE"]
 NUM_RESOURCES = len(RESOURCE_ORDER)
 NUM_HEXES = 19
 NUM_PLAYERS = 2 # Specific to 2-player setup

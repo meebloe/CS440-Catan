@@ -6,7 +6,8 @@ import logging
 # --- Constants and Mappings ---
 
 # Define resource order consistently
-RESOURCE_ORDER = ["LUMBER", "BRICK", "WOOL", "GRAIN", "ORE"]
+# RESOURCE_ORDER = ["LUMBER", "BRICK", "WOOL", "GRAIN", "ORE"] # Old
+RESOURCE_ORDER = ["WOOD", "BRICK", "SHEEP", "WHEAT", "STONE"]
 NUM_RESOURCES = len(RESOURCE_ORDER)
 
 # Define building types order consistently
