@@ -120,7 +120,7 @@ def get_action():
 
         # --- Step 4: Return Chosen Action ---
         if chosen_action:
-            app.logger.debug(f"Returning action: {json.dumps(chosen_action)}")
+            app.logger.info(f"[AI Decision] Chosen Action: {json.dumps(chosen_action, indent=2)}")
             return jsonify(chosen_action)
         else:
             app.logger.error("No action could be selected. Returning error.")

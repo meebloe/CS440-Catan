@@ -70,7 +70,7 @@ def launch_game(mode):
     bot_mode_flags = []
 
     if mode == "train" or mode == "bulktrain":
-        headless_flags = ["-batchmode", "-nographics"]
+        #headless_flags = ["-batchmode", "-nographics"]
         bot_mode_flags = ["--bot-vs-bot"] # Assumes Unity uses this flag
     elif mode == "play":
         # bot_mode_flags = ["--human-vs-bot"] # Add if needed
@@ -298,7 +298,7 @@ if __name__ == "__main__":
                 print("\n--- Training Model ---")
                 train_model(mode)
 
-        else: # Play mode (no timeout needed here)
+        elif mode == "play": # Play mode (no timeout needed here)
             print("\n--- Starting Play Mode Game (Graphical) ---")
             game_process = launch_game(mode)
             if game_process:

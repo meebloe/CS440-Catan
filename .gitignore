@@ -15,27 +15,6 @@ venv/
 *.log
 *.sqlite3
 
-# =========
-# UNITY
-# =========
-[Ll]ibrary/
-[Tt]emp/
-[Oo]bj/
-[Bb]uild/
-[Bb]uilds/
-[Ll]ogs/
-[Mm]emoryCaptures/
-UserSettings/
-Assets/AssetStoreTools*
-
-# Exclude built stuff
-client/CatanLearner_BurstDebugInformation_DoNotShip/
-client/CatanLearner_Data/
-client/D3D12/
-client/MonoBleedingEdge/
-client/UnityCrashHandler64.exe
-client/UnityPlayer.dll
-
 # Game logs
 client/SelfPlayLogs/
 client/OldLogs/
