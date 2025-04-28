@@ -16,23 +16,22 @@ try:
         from game_state_encoder import TOTAL_VECTOR_SIZE
 except ImportError as e:
      # Fallback if direct run or structure issues
-     logging.warning(f"Model Import Warning: {e}. Using potentially hardcoded constants.")
-     TOTAL_VECTOR_SIZE = 687 # Hardcoded fallback, ensure this is correct!
-     TOTAL_ACTIONS = 201     # Hardcoded fallback, ensure this is correct!
-     # Define get_action_index locally if needed for testing this file directly
+     logging.warning(f"Model Import Warning: {e}. Using hardcoded constants.")
+     TOTAL_VECTOR_SIZE = 687
+     TOTAL_ACTIONS = 201
      def get_action_index(action_dict): return None # Placeholder
 
 
-# --- Define the Neural Network ---
+#  Define the Neural Network 
 class CatanSimpleMLP(nn.Module):
     """
-    A slightly larger Multi-Layer Perceptron with Dropout for Catan state evaluation.
+    A Multi-Layer Perceptron with Dropout for Catan state evaluation.
     Input: Flattened state vector.
     Output: Scores for each possible theoretical action.
     """
-    # --- Updated hidden sizes and added dropout ---
+
     def __init__(self, input_size=TOTAL_VECTOR_SIZE, output_size=TOTAL_ACTIONS,
-                 hidden_size1=512, hidden_size2=256, dropout_prob=0.3): # Increased sizes, added dropout_prob
+                 hidden_size1=512, hidden_size2=256, dropout_prob=0.3):
         super(CatanSimpleMLP, self).__init__()
         self.input_size = input_size
         self.output_size = output_size
@@ -42,11 +41,11 @@ class CatanSimpleMLP(nn.Module):
         self.fc2 = nn.Linear(hidden_size1, hidden_size2)
         self.fc3 = nn.Linear(hidden_size2, output_size)  # Output layer size = total possible actions
 
-        # --- Added Dropout Layer ---
+        # Dropout layer (not sure if we really need this)
         self.dropout = nn.Dropout(p=self.dropout_prob)
 
-        # Epsilon-greedy exploration (remains the same)
-        self.epsilon = 0.15 # Consider tuning this as well
+        # Epsilon-greedy exploration (percent as decimal)
+        self.epsilon = 0.15 # Percentage chance to take a random action (explore)
 
         logging.info(
             f"Initialized CatanSimpleMLP: Input={input_size}, "
@@ -56,66 +55,53 @@ class CatanSimpleMLP(nn.Module):
 
     def forward(self, x):
         """
-        Forward pass through the network. Includes Dropout during training.
+        Forward pass through the network. Includes Dropout if training.
         """
         if not isinstance(x, torch.Tensor):
-            # Ensure input is a tensor (basic check)
+            # Convert numpy array or list to tensor if not already
             x = torch.tensor(x, dtype=torch.float32)
-            # Assuming device handling happens *before* calling forward if using GPU
 
+        # Ensure input is 2D (batch_size, input_size)
         if x.dim() == 1:
-            x = x.unsqueeze(0)  # Add batch dimension if necessary
+            x = x.unsqueeze(0)
         elif x.dim() > 2:
-             # If input somehow has >2 dims (e.g. [batch, sequence, features]), flatten remaining
              x = x.view(x.size(0), -1) # Flatten features
 
-        # Ensure correct dtype if not already float32
-        if x.dtype != torch.float32:
-             x = x.to(torch.float32)
 
-
-        # --- Apply layers with activation and Dropout ---
+        #  Apply layers with activation and Dropout 
         x = F.relu(self.fc1(x))
         x = self.dropout(x) # Apply dropout after activation
         x = F.relu(self.fc2(x))
         x = self.dropout(x) # Apply dropout after activation
-        x = self.fc3(x) # No activation/dropout usually on the final output layer (scores)
-        # ----------------------------------------------
+        x = self.fc3(x) # Scores for each action
+
         return x
 
-    # --- predict_action method remains the same ---
+    #  predict_action method remains the same 
     def predict_action(self, state_tensor, available_actions, use_exploration=True):
         """
         Given a state tensor and available actions, predict the best action index.
         Uses epsilon-greedy exploration during inference if enabled.
         IMPORTANT: Assumes model is already in eval() mode and state_tensor is on the correct device.
         """
-        # self.eval() # Redundant if called externally before predict_action
-        with torch.no_grad():
-            # Ensure state_tensor has batch dimension if single prediction
-            if state_tensor.dim() == 1:
-                state_tensor = state_tensor.unsqueeze(0)
 
-            # Model processes input (forward pass)
+        with torch.no_grad():
+
             model_output = self.forward(state_tensor) # Uses the updated forward pass
 
             if not available_actions:
                 logging.warning("predict_action called with no available actions.")
                 return None
 
-            # --- Exploration (epsilon-greedy) ---
+            #  Exploration
             if use_exploration and random.random() < self.epsilon:
                 random_action = random.choice(available_actions)
-                # Reduced verbosity for exploration message
-                # logging.debug("Exploration: Random action selected during inference.")
-                # Consider logging less frequently or only if TRAIN_MODE is true in calling script
-                # print("EXPLORE") # Simple console marker for exploration
                 return random_action
 
-            # --- Otherwise pick best-scoring available action ---
+            #  Otherwise pick best-scoring available action 
             best_score = -float('inf')
             chosen_action = None
-            scores = model_output.squeeze(0) # Remove batch dim, keep tensor on its device
+            scores = model_output.squeeze(0) # Remove batch dimension
 
             available_indices = []
             action_map = {}
@@ -127,7 +113,6 @@ class CatanSimpleMLP(nn.Module):
 
             if not available_indices:
                  logging.error("No available actions could be mapped to valid indices!")
-                 # Fallback: Maybe return END_TURN if it's always an option?
                  end_turn_action = next((a for a in available_actions if a.get("actionType") == "END_TURN"), None)
                  return end_turn_action # Return END_TURN if found, else None
 
@@ -136,13 +121,13 @@ class CatanSimpleMLP(nn.Module):
             best_local_idx = torch.argmax(available_scores).item() # Index within available_scores
             best_global_idx = available_indices[best_local_idx] # Map back to global action index
             chosen_action = action_map[best_global_idx]
-            best_score = available_scores[best_local_idx].item()
+            # best_score = available_scores[best_local_idx].item()
 
             # logging.debug(f"Chosen action: {chosen_action} with score {best_score:.4f}")
             return chosen_action
 
 
-# --- Example Usage (for testing this file directly) ---
+#  Example Usage (for testing this file directly) 
 if __name__ == "__main__":
     print("Testing updated model definition...")
     # Test instantiation with new defaults

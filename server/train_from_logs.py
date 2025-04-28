@@ -28,29 +28,29 @@ except ImportError as e:
      logging.error(f"Import Error: {e}. Make sure running from correct directory or package installed.")
      sys.exit(1)
 
-# --- Paths ---
+#  Paths 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_DIR = os.path.join(SCRIPT_DIR, "..", "client", "SelfPlayLogs")
 WEIGHTS_PATH = os.path.join(SCRIPT_DIR, "model_weights.pth")
 
-# --- Hyperparameters ---
+#  Hyperparameters 
 NORMAL_LR = 0.001
 FAST_LR = 0.01
 EPOCHS = 5
 BATCH_SIZE = 256
 
-# --- Reward Shaping Parameters ---
+#  Reward Shaping Parameters
 BASE_WIN_BONUS = 10.0
-TARGET_TURNS = 80
+TARGET_TURNS = 120
 MAX_TURNS = 400
 
-# --- Play Mode Boost ---
+#  Play Mode Boost 
 # How many times to duplicate samples from Human vs Bot games
 PLAY_MODE_DUPLICATION_FACTOR = 20 # Increased for play mode to boost training from human games
 
-# ---
+# 
 
-# --- Updated load_training_data with duplication_factor ---
+#  Updated load_training_data with duplication_factor 
 def load_training_data(log_dir, duplication_factor=1):
     """
     Loads training data from .jsonl logs, applying reward shaping and sample duplication.
@@ -75,7 +75,7 @@ def load_training_data(log_dir, duplication_factor=1):
     if not log_files: # Check added here
         logging.warning(f"No .jsonl files found in {log_dir}.")
         return states, actions, rewards
-    # ---
+    # 
 
     logging.info(f"Found {len(log_files)} log files.")
     processed_games = 0
@@ -147,12 +147,12 @@ def load_training_data(log_dir, duplication_factor=1):
                         final_reward += applied_bonus
                         if applied_bonus > 0: logging.debug(f"  Applied speed bonus {applied_bonus:.2f} to turn {idx} (Final reward: {final_reward:.2f})")
 
-                    # --- Apply Duplication ---
+                    #  Apply Duplication 
                     for _ in range(duplication_factor):
                         states.append(state_vector)
                         actions.append(action_idx)
                         rewards.append(final_reward)
-                    # ---
+                    # 
                     processed_turns += 1 # Count original turns processed
 
                 except Exception as turn_err:
@@ -184,12 +184,12 @@ def load_training_data(log_dir, duplication_factor=1):
 def train(mode="train"):
     logging.info(f"Starting training in '{mode}' mode.")
 
-    # --- Determine Duplication Factor based on mode ---
+    #  Determine Duplication Factor based on mode 
     effective_duplication_factor = 1
     if mode == "play":
         effective_duplication_factor = PLAY_MODE_DUPLICATION_FACTOR
         logging.info(f"Play mode detected. Applying duplication factor: {effective_duplication_factor}")
-    # ---
+    # 
 
     if not os.path.exists(LOG_DIR) or not os.path.isdir(LOG_DIR):
         logging.error(f"Log directory {LOG_DIR} does not exist. Nothing to train.")
@@ -199,9 +199,9 @@ def train(mode="train"):
     if torch.cuda.is_available(): device = torch.device("cuda"); logging.info("Using GPU.")
     else: device = torch.device("cpu"); logging.info("Using CPU.")
 
-    # --- Load Data with potential duplication ---
+    #  Load Data with potential duplication 
     states, actions, rewards = load_training_data(LOG_DIR, duplication_factor=effective_duplication_factor)
-    # ---
+    # 
     if not states:
         logging.error("No valid training data loaded. Exiting.")
         return
@@ -229,7 +229,7 @@ def train(mode="train"):
     optimizer = optim.Adam(model.parameters(), lr=lr)
     loss_fn = nn.MSELoss()
 
-    # --- Training Loop ---
+    #  Training Loop 
     model.train()
     dataset = list(zip(states, actions, rewards))
     for epoch in range(EPOCHS):
@@ -261,7 +261,7 @@ def train(mode="train"):
 
         avg_loss = total_loss / max(1, num_batches)
         logging.info(f"Epoch {epoch+1} completed. Avg Loss = {avg_loss:.6f}")
-    # --- End Training Loop ---
+    #  End Training Loop 
 
     # Save Model Weights
     os.makedirs(os.path.dirname(WEIGHTS_PATH), exist_ok=True)

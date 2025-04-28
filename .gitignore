@@ -17,7 +17,7 @@ venv/
 
 # Game logs
 client/SelfPlayLogs/
-client/OldLogs/
+client/OldLogs/*
 
 # ====================
 # VISUAL STUDIO
