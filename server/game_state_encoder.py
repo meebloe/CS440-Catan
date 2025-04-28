@@ -14,7 +14,7 @@ NUM_RESOURCES = len(RESOURCE_ORDER)
 BUILDING_TYPES = ["NONE", "SETTLEMENT", "CITY"] # For player-agnostic type
 NUM_BUILDING_TYPES = len(BUILDING_TYPES)
 
-# Define maximums for potential normalization (optional, but good practice)
+
 MAX_RESOURCES_PER_TYPE = 19 # Theoretical max, practical is lower
 MAX_VICTORY_POINTS = 10 # Or slightly higher for edge cases
 
@@ -191,7 +191,6 @@ def vectorize_state(state_data: dict) -> np.ndarray:
                 # Resources (using RESOURCE_ORDER)
                 resources = player_info.get("resources", {})
                 for j, res_name in enumerate(RESOURCE_ORDER):
-                    # Normalize resource count (optional, but recommended)
                     count = resources.get(res_name, 0)
                     state_vector[player_offset + j] = min(count, MAX_RESOURCES_PER_TYPE) / MAX_RESOURCES_PER_TYPE
 
