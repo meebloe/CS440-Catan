@@ -41,7 +41,7 @@ This project implements an AI agent using a simple Multi-Layer Perceptron (MLP) 
 
 1.  **Clone the Repository:**
     ```bash
-    git clone <your-repository-url>
+    git clone <repository_url>(https://github.com/meebloe/CS440-Catan.git)
     cd catan_ai_project
     ```
 
