@@ -42,7 +42,7 @@ This project implements an AI agent using a simple Multi-Layer Perceptron (MLP) 
 1.  **Clone the Repository:**
     ```bash
     git clone <https://github.com/meebloe/CS440-Catan.git>
-    cd catan_ai_project
+    cd CS440-Catan
     ```
 
 2.  **Create and Activate Conda Environment:**
